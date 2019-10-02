@@ -1,33 +1,24 @@
 import numpy as np
 import pandas as pd
+import attr
 
+@attr.s
 class Algorithm:
-    def __init__(self, experiment, parameters):
-        ''' Base algorithm class.
-            Args:
-                experiment (Experiment): an instance of the Experiment class
-                parameters (list): handles of the Parameter instances to be varied
-        '''
-        self.experiment = experiment
-        self.parameters = self.prepare_parameters(parameters)
-        cols = [x for x in self.parameters]
-        cols.append('result')
-        self.data = pd.DataFrame(columns=cols)
+    experiment = attr.ib()
+    parameters = attr.ib(factory=dict)
+    bounds = attr.ib(factory=dict)
+    data = attr.ib(factory=pd.DataFrame)
 
-    def prepare_parameters(self, parameters):
-        ''' Registers the passed parameters with the optimizer. Parameters can
-            either be passed as instances of the Parameter class or as strings
-            referring to attributes of the experiment.
-        '''
-        parameters_dict = {}
-        for p in parameters:
-            if isinstance(p, str):
-                try:
-                    p = self.experiment.parameters[p]
-                except KeyError:
-                    raise KeyError('Parameter "{p}" not defined within the experiment "{self.experiment.__name__}".')
-            parameters_dict[p.name] = p
-        return parameters_dict
+    def add_parameter(self, parameter, bounds=None):
+        self.parameters[parameter.name] = parameter
+        if bounds is None:
+            if parameter.bounds == (None, None):
+                raise ValueError('Define parameter bounds!')
+            self.bounds[parameter.name] = parameter.bounds
+        else:
+            self.bounds[parameter.name] = bounds
+
+        return self
 
     def actuate(self, point):
         ''' Sets each parameter to the value corresponding to a normalized value
@@ -37,9 +28,9 @@ class Algorithm:
 
         i = 0
         for name, parameter in self.parameters.items():
-            bounds = self.experiment.bounds[name]
+            bounds = self.bounds[name]
             if point[i] < bounds[0] or point[i] > bounds[1]:
-                raise ValueError(f'The optimizer requested a point outside the valid bounds for parameter {p.name} and will now terminate.')
+                raise ValueError(f'The optimizer requested a point outside the valid bounds for parameter {parameter.name} and will now terminate.')
             parameter(point[i])
             i += 1
 
@@ -47,8 +38,8 @@ class Algorithm:
         ''' Actuate to specified point and measure result '''
         self.actuate(point)
         i = len(self.data)
-        for p in self.parameters.values():
-            self.data.loc[i, p.name] = p()
+        for name, parameter in self.parameters.items():
+            self.data.loc[i, name] = parameter()
         self.data.loc[i, 'result'] = self.experiment()
         return self.data.loc[i, 'result']
 
@@ -62,7 +53,7 @@ class Algorithm:
             raise Exception('Dimension of array passed to unnormalize() is incompatible with number of Parameters.')
         i=0
         for p in self.parameters.values():
-            bounds = self.experiment.bounds[p.name]
+            bounds = self.bounds[p.name]
             a[:,i] = (np.atleast_2d(points)[:,i] - bounds[0]) / (bounds[1]-bounds[0])
             i += 1
 
@@ -83,7 +74,7 @@ class Algorithm:
             raise Exception('Dimension of array passed to unnormalize() is incompatible with number of Parameters.')
         i=0
         for p in self.parameters.values():
-            bounds = self.experiment.bounds[p.name]
+            bounds = self.bounds[p.name]
             a[:,i] = bounds[0] + np.atleast_2d(points)[:,i]*(bounds[1]-bounds[0])
             i += 1
 
