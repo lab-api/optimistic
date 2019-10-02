@@ -12,7 +12,7 @@ class Algorithm:
     def add_parameter(self, parameter, bounds=None):
         self.parameters[parameter.name] = parameter
         if bounds is None:
-            if parameter.bounds == (None, None):
+            if parameter.bounds == (-np.inf, np.inf):
                 raise ValueError('Define parameter bounds!')
             self.bounds[parameter.name] = parameter.bounds
         else:
@@ -29,7 +29,7 @@ class Algorithm:
         i = 0
         for name, parameter in self.parameters.items():
             bounds = self.bounds[name]
-            if point[i] < bounds[0] or point[i] > bounds[1]:
+            if not bounds[0] <= point[i] <= bounds[1]:
                 raise ValueError(f'The optimizer requested a point outside the valid bounds for parameter {parameter.name} and will now terminate.')
             parameter(point[i])
             i += 1
@@ -50,7 +50,7 @@ class Algorithm:
         shape = np.shape(points)
         a = np.empty(np.atleast_2d(points).shape)
         if a.shape[1] != len(self.parameters):
-            raise Exception('Dimension of array passed to unnormalize() is incompatible with number of Parameters.')
+            raise Exception('Dimension of array passed to normalize() is incompatible with number of Parameters.')
         i=0
         for p in self.parameters.values():
             bounds = self.bounds[p.name]
