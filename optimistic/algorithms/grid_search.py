@@ -1,12 +1,11 @@
 from optimistic.algorithms import Algorithm
 import numpy as np
+import attr
 
+@attr.s
 class GridSearch(Algorithm):
-    def __init__(self, experiment, parameters, steps=20, scans=1):
-        super().__init__(experiment, parameters)
-        self.steps = steps
-        
-        self.run()
+    steps = attr.ib(default=20, converter=int)
+    scans = attr.ib(default=1, converter=int)
 
     def run(self):
         dim = len(self.parameters)

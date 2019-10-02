@@ -1,14 +1,12 @@
 from optimistic.algorithms import Algorithm
 import numpy as np
+import attr
 
+@attr.s
 class GradientDescent(Algorithm):
-    def __init__(self, experiment, parameters, iterations=100, learning_rate=1e-3, dither_size=1e-2):
-        super().__init__(experiment, parameters)
-        self.iterations = int(iterations)
-        self.learning_rate = float(learning_rate)
-        self.dither_size = float(dither_size)
-
-        self.run()
+    iterations = attr.ib(default=100, converter=int)
+    learning_rate = attr.ib(default=1e-3, converter=float)
+    dither_size = attr.ib(1e-2, converter=float)
 
     def gradient(self, x):
         dim = len(self.parameters)
