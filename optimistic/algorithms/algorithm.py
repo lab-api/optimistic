@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import attr
 import time
+from sklearn.preprocessing import MinMaxScaler
 
 @attr.s
 class Algorithm:
@@ -76,7 +77,7 @@ class Algorithm:
         ''' Sets each parameter to the value corresponding to a normalized value
             in the passed array.
         '''
-        point = self.unnormalize(point)
+        point = self.unnormalize(point)[0]
 
         i = 0
         for name, parameter in self.parameters.items():
@@ -111,7 +112,6 @@ class Algorithm:
 
         return new_data
 
-
     def measure(self, point):
         ''' Actuate to specified point and measure result '''
         self.actuate(point)
@@ -121,44 +121,21 @@ class Algorithm:
 
         return self.data.iloc[-1][self.experiment.__name__]
 
+    def scaler(self):
+        bounds_array = np.atleast_2d([x for x in self.bounds.values()])
+        scaler = MinMaxScaler()
+        scaler.fit(bounds_array.T)
+
+        return scaler
+
     def normalize(self, points):
         ''' Normalize a point to (0,1) according to the optimizer bounds.
-            Return the point in the same format it was passed.
+            Return a 2D array.
         '''
-        shape = np.shape(points)
-        a = np.empty(np.atleast_2d(points).shape)
-        if a.shape[1] != len(self.parameters):
-            raise Exception('Dimension of array passed to normalize() is incompatible with number of Parameters.')
-        i=0
-        for p in self.parameters.values():
-            bounds = self.bounds[p.name]
-            a[:,i] = (np.atleast_2d(points)[:,i] - bounds[0]) / (bounds[1]-bounds[0])
-            i += 1
-
-        if len(shape) == 0:     # single value was passed
-            return a[0,0]
-        elif len(shape) == 1:  # 1D list/array was passed
-            return a[0]
-        else:                   # 2D list/array was passed
-            return a
+        return self.scaler().transform(np.atleast_2d(points))
 
     def unnormalize(self, points):
-        ''' Convert a normalized (0-1) point according to the optimizer bounds.
-            Return the point in the same format it was passed.
+        ''' Unnormalize a point from (0,1) according to the optimizer bounds.
+            Return a 2D array.
         '''
-        shape = np.shape(points)
-        a = np.empty(np.atleast_2d(points).shape)
-        if a.shape[1] != len(self.parameters):
-            raise Exception('Dimension of array passed to unnormalize() is incompatible with number of Parameters.')
-        i=0
-        for p in self.parameters.values():
-            bounds = self.bounds[p.name]
-            a[:,i] = bounds[0] + np.atleast_2d(points)[:,i]*(bounds[1]-bounds[0])
-            i += 1
-
-        if len(shape) == 0:     # single value was passed
-            return a[0,0]
-        elif len(shape) == 1:  # 1D list/array was passed
-            return a[0]
-        else:
-            return a            # 2D list/array was passed
+        return self.scaler().inverse_transform(np.atleast_2d(points))
