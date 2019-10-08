@@ -3,6 +3,7 @@ import pandas as pd
 import attr
 import time
 from sklearn.preprocessing import MinMaxScaler
+import matplotlib.pyplot as plt
 
 @attr.s
 class Algorithm:
@@ -139,3 +140,14 @@ class Algorithm:
             Return a 2D array.
         '''
         return self.scaler().inverse_transform(np.atleast_2d(points))
+
+    def plot_convergence(self):
+        self.data[self.experiment.__name__].plot()
+        plt.xlabel('Iteration')
+        plt.ylabel(self.experiment.__name__)
+
+    def plot_parameter_space(self, parameter):
+        ''' Pass up to two parameters to visualize the parameter space of the objective function '''
+        plt.plot(self.data[parameter.name], self.data[self.experiment.__name__])
+        plt.xlabel(parameter.name)
+        plt.ylabel(self.experiment.__name__)
