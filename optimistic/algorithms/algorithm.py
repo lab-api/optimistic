@@ -142,7 +142,7 @@ class Algorithm:
     def scaler(self):
         bounds_array = np.atleast_2d([x for x in self.bounds.values()])
         scaler = MinMaxScaler()
-        scaler.fit(bounds_array.T)
+        scaler.fit(bounds_array.astype(float).T)
 
         return scaler
 
@@ -150,13 +150,13 @@ class Algorithm:
         ''' Normalize a point to (0,1) according to the optimizer bounds.
             Return a 2D array.
         '''
-        return self.scaler().transform(np.atleast_2d(points))
+        return self.scaler().transform(np.atleast_2d(points).astype(float))
 
     def unnormalize(self, points):
         ''' Unnormalize a point from (0,1) according to the optimizer bounds.
             Return a 2D array.
         '''
-        return self.scaler().inverse_transform(np.atleast_2d(points))
+        return self.scaler().inverse_transform(np.atleast_2d(points).astype(float))
 
     @property
     def plot(self):
