@@ -37,13 +37,24 @@ class Algorithm:
                                         example, it may be desirable to monitor
                                         laser power while optimizing the frequency.
     '''
-    experiment = attr.ib()
+    experiment = attr.ib(default=None)
     parameters = attr.ib(factory=dict)
     bounds = attr.ib(factory=dict)
     points = attr.ib(factory=dict)        # optional overrides to search points
     delays = attr.ib(factory=dict)        # post-actuation delays
     data = attr.ib(factory=pd.DataFrame)
     dependent_variables = attr.ib(factory=dict)
+
+    @property
+    def data_normalized(self):
+        ''' Return a numpy array corresponding to the parameter space points in
+            self.data. '''
+        normalized_data = self.data.copy()
+        normalized_array = self.normalize(self.data[self.parameters].values)
+        for i, x in enumerate(self.parameters):
+            normalized_data[x] = normalized_array[:, i]
+
+        return normalized_data
 
     def add_parameter(self, parameter, bounds=None, points=None, delay=0):
         ''' Adds a parameter.
@@ -119,6 +130,8 @@ class Algorithm:
 
     def measure(self, point):
         ''' Actuate to specified point and measure result '''
+        if self.experiment is None:
+            raise ValueError('No experiment has been assigned to this optimizer!')
         self.actuate(point)
         new_data = self.result_to_dataframe(self.experiment())
         self.data = self.data.append(new_data)
