@@ -27,3 +27,6 @@ class GridSearch(Algorithm):
 
         for point in points:
             self.measure(point)
+
+        best_point = self.data.loc[self.data[self.experiment.__name__].idxmin()][self.parameters].values
+        self.measure(self.normalize(best_point))

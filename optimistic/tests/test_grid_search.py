@@ -10,5 +10,5 @@ def test_grid_search():
     opt = GridSearch(result, steps=5)
     opt.add_parameter(x, bounds=(-1, 1))
     opt.run()
-    assert (opt.data['x'] == [-1, -0.5, 0, 0.5, 1]).all()
+    assert (opt.data['x'] == [-1, -0.5, 0, 0.5, 1, 0]).all()
     assert opt.experiment() == opt.data['result'].min()
