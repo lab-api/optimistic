@@ -20,7 +20,8 @@ class Pipeline(Algorithm):
         block.points = self.points
         block.delays = self.delays
         block.dependent_variables = self.dependent_variables
-
+        block.parent = self
+        
     def run(self):
         from optimistic.models import Model
 
