@@ -2,7 +2,6 @@ from optimistic.algorithms import Algorithm
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import attr
-from tqdm import tqdm_notebook as tqdm
 
 @attr.s
 class GridSearch(Algorithm):
@@ -26,5 +25,5 @@ class GridSearch(Algorithm):
 
         points = np.transpose(np.meshgrid(*[grid[n] for n in range(dim)])).reshape(-1, dim)
 
-        for point in tqdm(points):
+        for point in points:
             self.measure(point)
