@@ -98,7 +98,9 @@ class Algorithm:
         i = 0
         for name, parameter in self.parameters.items():
             bounds = self.bounds[name]
-            if not bounds[0] <= point[i] <= bounds[1]:
+            if not np.round(bounds[0], 7) <= np.round(point[i], 7) <= np.round(bounds[1], 7):
+                print(point[i], bounds[0], bounds[0] <= point[i])
+                print(point[i], bounds[1], point[i] <= bounds[1])
                 raise ValueError(f'The optimizer requested a point outside the valid bounds for parameter {parameter.name} and will now terminate.')
             parameter(point[i])
             time.sleep(self.delays[name])
@@ -107,7 +109,7 @@ class Algorithm:
     def result_to_dataframe(self, result):
         ''' Takes an experimental result and forms a DataFrame to append to self.data. '''
         ## case 1: type(result) == float
-        if isinstance(result, float):
+        if isinstance(result, float) or isinstance(result, int):
             new_data = pd.DataFrame(index=[len(self.data)], columns=[*list(self.parameters), self.experiment.__name__])
             for name, parameter in self.parameters.items():
                 new_data[name] = parameter()
