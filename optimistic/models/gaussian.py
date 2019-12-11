@@ -25,7 +25,7 @@ class Gaussian(Model):
         N = len(self.parameters)
         p0 = tuple([0.5]*(2*N+1))
         points = data[self.parameters].values
-        costs = data[self.experiment.__name__]
+        costs = data[self.experiment.__name__].values
         self.popt, self.pcov = curve_fit(self.gaussian, points, costs, p0)
 
     def predict(self, X):
