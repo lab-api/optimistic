@@ -166,3 +166,15 @@ class Algorithm:
             raise ImportError('Matplotlib could not be imported.')
         from .plotting import Plotter
         return Plotter(self)
+
+    @classmethod
+    def study(cls, experiment, parameter, bounds, **kwargs):
+        ''' Launches a 1D optimization of the passed experiment with
+            the given parameter and bounds. You can include any keyword arguments
+            you want to pass to the optimizer.
+        '''
+        inst = cls(experiment, **kwargs)
+        inst.add_parameter(parameter, bounds=bounds)
+        inst.run()
+        inst.plot.parameter_space(parameter)
+        return inst
