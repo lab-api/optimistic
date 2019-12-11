@@ -12,6 +12,6 @@ class Plotter:
 
     def parameter_space(self, parameter):
         ''' Pass up to two parameters to visualize the parameter space of the objective function '''
-        plt.plot(self.data[parameter.name], self.data[self.experiment.__name__])
+        plt.plot(self.data[parameter.name], self.data[self.experiment.__name__], '.')
         plt.xlabel(parameter.name)
         plt.ylabel(self.experiment.__name__)
