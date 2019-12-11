@@ -25,7 +25,7 @@ class GridSearch(Algorithm):
 
         points = np.transpose(np.meshgrid(*[grid[n] for n in range(dim)])).reshape(-1, dim)
 
-        for point in points:
+        for point in self.iterate(points):
             self.measure(point)
 
         best_point = self.data.loc[self.data[self.experiment.__name__].idxmin()][self.parameters].values

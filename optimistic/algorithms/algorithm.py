@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import attr
 import time
+from tqdm.auto import tqdm
 from sklearn.preprocessing import MinMaxScaler
 
 try:
@@ -44,6 +45,7 @@ class Algorithm:
     delays = attr.ib(factory=dict)        # post-actuation delays
     data = attr.ib(factory=pd.DataFrame)
     dependent_variables = attr.ib(factory=dict)
+    show_progress = attr.ib(default=True)
 
     @property
     def data_normalized(self):
@@ -178,3 +180,9 @@ class Algorithm:
         inst.run()
         inst.plot.parameter_space(parameter)
         return inst
+
+    def iterate(self, lst):
+        if self.show_progress:
+            return tqdm(lst)
+        else:
+            return lst
