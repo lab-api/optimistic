@@ -108,13 +108,13 @@ class Algorithm:
             time.sleep(self.delays[name])
             i += 1
 
-    def result_to_dataframe(self, result):
+    def result_to_dataframe(self, dependent_variables, result):
         ''' Takes an experimental result and forms a DataFrame to append to self.data. '''
         ## case 1: type(result) == float
         if isinstance(result, float) or isinstance(result, int):
             new_data = pd.DataFrame(index=[len(self.data)], columns=[*list(self.parameters), self.experiment.__name__])
             for name, parameter in self.parameters.items():
-                new_data[name] = parameter()
+                new_data[name] = dependent_variables[name]
             new_data[self.experiment.__name__] = result
 
         if isinstance(result, pd.DataFrame):
@@ -136,8 +136,13 @@ class Algorithm:
         ''' Actuate to specified point and measure result '''
         if self.experiment is None:
             raise ValueError('No experiment has been assigned to this optimizer!')
-        self.actuate(point)
-        new_data = self.result_to_dataframe(self.experiment())
+
+        new_values = {}
+        point = self.unnormalize(point)[0]
+        for i, (name, parameter) in enumerate(self.parameters.items()):
+            new_values[name] = point[i]
+        new_data = self.result_to_dataframe(new_values, self.experiment(**new_values))
+
         self.data = self.data.append(new_data)
         self.data = self.data.reset_index().drop('index', axis=1)
 

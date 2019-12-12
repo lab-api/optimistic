@@ -1,8 +1,10 @@
 from parametric import Parameter
 from optimistic.algorithms import Algorithm
+from optimistic.decorators import experiment
 import pytest
 import numpy as np
 
+@experiment
 def result():
     return 0
 

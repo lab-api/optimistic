@@ -1,7 +1,9 @@
 from optimistic.algorithms import Algorithm
+from optimistic.decorators import experiment
 from parametric import Parameter
 import pytest
 
+@experiment
 def result():
     return 0
 
