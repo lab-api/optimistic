@@ -10,5 +10,5 @@ setup(
     packages=find_packages(exclude=['docs']),
     license='MIT',
     long_description=open('README.md').read(),
-    install_requires=['numpy', 'pandas', 'scikit-learn', 'tqdm', 'dask']
+    install_requires=['numpy', 'pandas', 'scikit-learn', 'tqdm', 'dask', 'dask distributed']
 )

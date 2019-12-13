@@ -3,4 +3,5 @@ pandas
 tqdm
 scikit-learn
 dask
+dask distributed
 -r dependency-links.txt
