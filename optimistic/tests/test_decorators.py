@@ -1,11 +1,11 @@
-from optimistic.decorators import factory, experiment
-from parametric import Parameter
+from optimistic.decorators import experiment
+from parametric import Parameter, Attribute, parametrize
 import pytest
 
-@factory
+@parametrize
 class Foo:
-    a = Parameter('a', 1)
-    b = Parameter('b', 2)
+    a = Attribute('a', 1)
+    b = Attribute('b', 2)
 
     @experiment(parallel=True)
     def bar(self):

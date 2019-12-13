@@ -85,7 +85,6 @@ def experiment(func=None, *, ignored=[], parallel=False):
     if func is None:
         return partial(experiment, ignored=ignored, parallel=parallel)
 
-
     @wraps(func)
     def wrapper(*args, **parameters):
         if not parallel:
@@ -105,9 +104,8 @@ def experiment(func=None, *, ignored=[], parallel=False):
         else:
             ## clone the instance, then update parameters and call the cloned function
             if len(args) == 0:
-                raise IndexError('Parallel optimization is supported for class methods only.')
-            instance = args[0]
-            clone = instance.__clone__()
+                raise IndexError('Parallel optimization is supported for class methods only to ensure Parameter containerization.')
+            clone = deepcopy(args[0])
             for name, value in parameters.items():
                 if name in ignored:
                     continue
