@@ -1,14 +1,11 @@
 from parametric import Parameter
 from optimistic.algorithms import GridSearch
-from optimistic.decorators import experiment
+from optimistic import experiment
 import numpy as np
-
-
-
 
 def test_grid_search():
     x = Parameter('x')
-    
+
     @experiment
     def result():
         return x**2

@@ -1,6 +1,6 @@
 from parametric import Parameter
 from optimistic.algorithms import Algorithm
-from optimistic.decorators import experiment
+from optimistic import experiment
 import pytest
 import numpy as np
 

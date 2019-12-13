@@ -1,57 +1,7 @@
 import inspect
 from parametric import Parameter
 from functools import wraps, partial
-from copy import copy, deepcopy
-
-class factory:
-    ''' A convenience constructor for classes with Parameters which forwards
-        keyword arguments to update corresponding parameter values.
-
-        Example:
-            @factory
-            class MyFactory:
-                x = Parameter('x', 0)
-
-            fact = MyFactory()
-            fact2 = MyFactory(x=3)
-
-            print(fact.x, fact2.x)
-            >> 0, 3
-
-        The parameters defined in the decorated class are conveniently stored in
-        its __parameters__ dict:
-            print(fact.__parameters__)
-            >> {'x', Parameter('x', 0)}
-    '''
-    def __init__(self, cls, **parameters):
-        self.cls = cls
-        cls.__parameters__ = property(lambda cls: self.params(cls))
-        cls.__clone__ = self.__clone__
-
-    def __clone__(self):
-        ''' Makes a deep copy of the decorated instance '''
-        clone = deepcopy(self.instance)
-        for name, param in clone.__parameters__.items():
-            setattr(clone, name, copy(param))
-        return clone
-
-    def __call__(self, **parameters):
-        for name, value in parameters.items():
-            param = getattr(self.cls, name)
-            if isinstance(param, Parameter):
-                param(value)
-        self.instance = self.cls.__call__()
-        return self.instance
-
-    def params(self, cls):
-        parameters = {}
-        for name in dir(cls):
-            if name not in dir(self) and name != '__parameters__':
-                item = getattr(cls, name)
-                if isinstance(item, Parameter):
-                    parameters[item.name] = item
-        return parameters
-
+from copy import deepcopy
 
 def search_namespace(name, frame=None):
     ''' Recursively search upwards through namespaces for the referenced Parameter '''

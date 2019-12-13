@@ -1,5 +1,5 @@
 from optimistic.algorithms import Algorithm
-from optimistic.decorators import experiment
+from optimistic import experiment
 from parametric import Parameter
 import pytest
 

@@ -1,4 +1,4 @@
-from optimistic.decorators import experiment
+from optimistic import experiment
 from parametric import Parameter, Attribute, parametrize
 import pytest
 
