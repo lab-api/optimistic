@@ -132,13 +132,14 @@ class Algorithm:
 
         return new_data
 
-    def measure(self, point):
+    def measure(self, point, normalized=True):
         ''' Actuate to specified point and measure result '''
         if self.experiment is None:
             raise ValueError('No experiment has been assigned to this optimizer!')
 
         new_values = {}
-        point = self.unnormalize(point)[0]
+        if normalized:
+            point = self.unnormalize(point)[0]
         for i, (name, parameter) in enumerate(self.parameters.items()):
             new_values[name] = point[i]
         new_data = self.result_to_dataframe(new_values, self.experiment(**new_values))
