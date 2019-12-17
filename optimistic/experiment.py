@@ -17,7 +17,7 @@ def search_namespace(name, frame=None):
         else:
             return search_namespace(name, frame.f_back)
 
-def experiment(func=None, *, ignored=[], parallel=False):
+def experiment(func=None, *, ignored=[]):
     ''' Decorates an experiment function, which by default should have no positional
         or keyword arguments. Adds optional keyword arguments which are forwarded
         to update parameter values, which are searched by name recursively
@@ -33,10 +33,10 @@ def experiment(func=None, *, ignored=[], parallel=False):
         of different parameter sets.
     '''
     if func is None:
-        return partial(experiment, ignored=ignored, parallel=parallel)
+        return partial(experiment, ignored=ignored)
 
     @wraps(func)
-    def wrapper(*args, **parameters):
+    def wrapper(*args, parallel=False, **parameters):
         if not parallel:
             ## update parameters and call the decorated function
             for name, value in parameters.items():
