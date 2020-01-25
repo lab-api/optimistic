@@ -1,5 +1,4 @@
 from optimistic.algorithms import Algorithm
-from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import attr
 import pandas as pd
@@ -38,13 +37,11 @@ class GridSearch(Algorithm):
             self.run_parallel()
         else:
             self.run_sequential()
-        best_point = self.data.loc[self.data[self.experiment.__name__].idxmin()][self.parameters].values
-        self.measure(best_point, normalized=False)
 
     def run_sequential(self):
         points = self.generate_grid()
         for point in self.iterate(points):
-            self.measure(point, normalized=False)
+            self.measure(point)
 
     def run_parallel(self):
         points = self.generate_grid()
