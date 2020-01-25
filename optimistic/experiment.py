@@ -3,19 +3,21 @@ from parametric import Parameter
 from functools import wraps, partial
 from copy import deepcopy
 
-def search_namespace(name, frame=None):
-    ''' Recursively search upwards through namespaces for the referenced Parameter '''
-    if frame is None:
-        frame = inspect.currentframe()
-    calling_namespace = frame.f_back.f_locals
-    if name not in calling_namespace:
-        return search_namespace(name, frame.f_back)
-    else:
+def search_namespace(name):
+    ''' Search two frames up for the referenced Parameter. For example, if
+        a parameter 'x' is defined in the local namespace and we pass a keyword
+        argument x=2 to a function also defined in the local namespace, this
+        function will return a handle to the parameter x.
+    '''
+    frame = inspect.currentframe()
+    calling_namespace = frame.f_back.f_back.f_locals
+    try:
         param = calling_namespace[name]
         if isinstance(param, Parameter):
             return param
-        else:
-            return search_namespace(name, frame.f_back)
+    except:
+        raise Exception('Parameter not found in local namespace.')
+
 
 def experiment(func=None, *, ignored=[]):
     ''' Decorates an experiment function, which by default should have no positional
@@ -36,18 +38,15 @@ def experiment(func=None, *, ignored=[]):
         return partial(experiment, ignored=ignored)
 
     @wraps(func)
-    def wrapper(*args, parallel=False, **parameters):
+    def wrapper(*args, parallel=False, optimizer=None, **parameters):
         if not parallel:
             ## update parameters and call the decorated function
             for name, value in parameters.items():
                 if name in ignored:
                     continue
-                ## if name corresponds to a parameter of the parent class, update that
-                try:
-                    param = getattr(args[0], name)
-                    assert isinstance(param, Parameter)
-                except:
-                    ## otherwise, search namespace
+                if optimizer is not None:
+                    param = optimizer.parameters[name]
+                else:
                     param = search_namespace(name)
                 param(value)
             return func(*args)

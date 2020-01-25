@@ -4,7 +4,7 @@ import attr
 import time
 from tqdm.auto import tqdm
 from sklearn.preprocessing import MinMaxScaler
-
+from optimistic import experiment as objective
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -142,7 +142,7 @@ class Algorithm:
             point = self.unnormalize(point)[0]
         for i, (name, parameter) in enumerate(self.parameters.items()):
             new_values[name] = point[i]
-        new_data = self.result_to_dataframe(new_values, self.experiment(**new_values))
+        new_data = self.result_to_dataframe(new_values, self.experiment(optimizer=self, **new_values))
 
         self.data = self.data.append(new_data)
         self.data = self.data.reset_index().drop('index', axis=1)
