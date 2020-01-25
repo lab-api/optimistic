@@ -14,6 +14,7 @@ class GridSearch(Algorithm):
     parallel = attr.ib(default=False, converter=bool)
     threads_per_worker = attr.ib(default=1, converter=int)
     workers = attr.ib(default=mp.cpu_count(), converter=int)
+    logarithmic = attr.ib(default=False, converter=bool)
 
     def generate_grid(self):
         dim = len(self.parameters)
@@ -22,7 +23,14 @@ class GridSearch(Algorithm):
             if name in self.points:
                 grid.append(self.points[name])
             else:
-                grid.append(np.linspace(self.bounds[name][0], self.bounds[name][1], self.steps))
+                if self.logarithmic:
+                    grid.append(np.logspace(np.log10(self.bounds[name][0]),
+                                            np.log10(self.bounds[name][1]),
+                                            self.steps))
+                else:
+                    grid.append(np.linspace(self.bounds[name][0],
+                                            self.bounds[name][1],
+                                            self.steps))
         return np.transpose(np.meshgrid(*[grid[n] for n in range(dim)])).reshape(-1, dim)
 
     def run(self):
