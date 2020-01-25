@@ -149,6 +149,28 @@ class Algorithm:
 
         return self.data.iloc[-1][self.experiment.__name__]
 
+    @objective
+    def metacost(self):
+        ''' Runs an optimization and returns the integrated cost as an objective
+            function for meta-optimization. The @objective tag supports passing
+            any of the optimizer parameters into the metacost evaluation.
+        '''
+        # measure original coordinates
+        original_coordinates = {}
+        for p in self.parameters.values():
+            original_coordinates[p.name] = p()
+
+        # run experiment and compute integral of objective function
+        self.data = pd.DataFrame()
+        self.run()
+        integrated_cost = self.data[self.experiment.__name__].sum()
+
+        # reset coordinates
+        for p in original_coordinates:
+            self.parameters[p](original_coordinates[p])
+
+        return -integrated_cost
+
     def scaler(self):
         bounds_array = np.atleast_2d([x for x in self.bounds.values()])
         scaler = MinMaxScaler()
