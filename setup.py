@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     install_requires=['numpy',
                       'pandas',
-                      'attr',
+                      'attrs',
                       'matplotlib',
                       'scikit-learn',
                       'tqdm',
