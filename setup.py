@@ -10,5 +10,12 @@ setup(
     packages=find_packages(exclude=['docs']),
     license='MIT',
     long_description=open('README.md').read(),
-    install_requires=['numpy', 'pandas', 'scikit-learn', 'tqdm', 'dask', 'distributed']
+    install_requires=['numpy',
+                      'pandas',
+                      'attr',
+                      'matplotlib',
+                      'scikit-learn',
+                      'tqdm',
+                      'dask',
+                      'distributed']
 )
