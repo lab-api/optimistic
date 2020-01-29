@@ -22,20 +22,25 @@ class Algorithm:
             points (dict): optional points for each Parameter to override default
                            point generation in optimizers, e.g. sampling locations
                            for a grid search or initial population in a genetic algorithm.
-            show_progress (bool): whether or not to display a progress bar during
-                                  optimization. Adds <1 ms overhead.
             X (2d array): coordinates sampled during optimization. Defaults to empty,
                           but previous results can be passed (along with results into
                           the y argument) to speed up some optimizers.
             y (1d array): objective function evaluations. Defaults to empty.
+            show_progress (bool): whether to display a progress bar during
+                                  optimization. Adds <1 ms overhead per iteration.
+            record_data (bool): whether to store X, y observations. Adds <1 ms overhead per iteration.
+            verbose (bool): whether to print objective function evaluations to stdout.
     '''
     experiment = attr.ib(default=None)
     parameters = attr.ib(factory=dict)
     bounds = attr.ib(factory=dict)
     points = attr.ib(factory=dict)        # optional overrides to search points
-    show_progress = attr.ib(default=True)
     X = attr.ib(factory=lambda: np.atleast_2d([]))
     y = attr.ib(factory=lambda: np.array([]))
+
+    show_progress = attr.ib(default=True)
+    record_data = attr.ib(default=True)
+    verbose = attr.ib(default=False)
 
     def add_parameter(self, parameter, bounds=None, points=None):
         ''' Adds a parameter.
@@ -84,13 +89,17 @@ class Algorithm:
         new_values = {}
         for i, (name, parameter) in enumerate(self.parameters.items()):
             new_values[name] = point[i]
-
-        if len(self.X[0]) == 0:
-            self.X = np.atleast_2d(point)
-        else:
-            self.X = np.append(self.X, np.atleast_2d(point), axis=0)
         result = self.experiment(optimizer=self, **new_values)
-        self.y = np.append(self.y, result)
+
+        if self.record_data:
+            if len(self.X[0]) == 0:
+                self.X = np.atleast_2d(point)
+            else:
+                self.X = np.append(self.X, np.atleast_2d(point), axis=0)
+            self.y = np.append(self.y, result)
+
+        if self.verbose:
+            print(point, result)
 
         return result
 
