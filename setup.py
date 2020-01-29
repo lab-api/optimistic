@@ -17,5 +17,6 @@ setup(
                       'scikit-learn',
                       'tqdm',
                       'dask',
-                      'distributed']
+                      'distributed',
+                      'ipywidgets']
 )
