@@ -30,6 +30,8 @@ class Algorithm:
                                   optimization. Adds <1 ms overhead per iteration.
             record_data (bool): whether to store X, y observations. Adds <1 ms overhead per iteration.
             verbose (bool): whether to print objective function evaluations to stdout.
+            continuous (bool): whether to quit after convergence/specified number of iterations
+                               or continue running.
     '''
     experiment = attr.ib(default=None)
     parameters = attr.ib(factory=dict)
@@ -41,6 +43,7 @@ class Algorithm:
     show_progress = attr.ib(default=True)
     record_data = attr.ib(default=True)
     verbose = attr.ib(default=False)
+    continuous = attr.ib(default=False)
 
     def add_parameter(self, parameter, bounds=None, points=None):
         ''' Adds a parameter.
@@ -150,8 +153,38 @@ class Algorithm:
         inst.plot.parameter_space(parameter)
         return inst
 
-    def iterate(self, lst):
-        if self.show_progress:
-            return tqdm(lst)
+    def range(self, iterations):
+        ''' Functions similarly to the built-in range() generator, e.g.
+                for i in self.range(10):
+                    print(i)
+            prints integers from 0 to 9. However, if self.continuous==True,
+            i will be reset to 0 afterwards and the integers will be repeatedly
+            printed in order until execution is interrupted.
+        '''
+        if not self.continuous:
+            yield from range(1*iterations)
         else:
-            return lst
+            i = 0
+            while True:
+                yield i
+                i = (i+1) % 1*iterations
+
+    def iterate(self, lst):
+        ''' Functions similarly to the built-in list() generator, e.g.
+                for x in [1, 2, 3]:
+                    print(x)
+            prints 1, 2, and 3. However, if self.continuous==True,
+            this function will continue to loop through the list values.
+
+            If self.show_progress==True, returns a tqdm generator for displaying
+            a progress bar.
+        '''
+        if self.show_progress and not self.continuous:
+            yield from tqdm(lst)
+        elif not self.continuous:
+            yield from list(lst)
+        else:
+            i = 0
+            while True:
+                yield lst[i]
+                i = (i+1) % len(lst)
