@@ -32,7 +32,7 @@ class GridSearch(Algorithm):
                                             self.steps))
         return np.transpose(np.meshgrid(*[grid[n] for n in range(dim)])).reshape(-1, dim)
 
-    def run(self):
+    def _run(self):
         if self.parallel:
             self.run_parallel()
         else:

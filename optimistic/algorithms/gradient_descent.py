@@ -22,7 +22,7 @@ class GradientDescent(Algorithm):
 
         return g
 
-    def run(self):
+    def _run(self):
         x_i = [p() for p in self.parameters.values()]
 
         for i in self.range(self.iterations):

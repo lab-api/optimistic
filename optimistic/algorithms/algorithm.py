@@ -5,6 +5,7 @@ import time
 from tqdm.auto import tqdm
 from optimistic import experiment as objective
 from .plotting import Plotter
+from threading import Thread
 
 @attr.s
 class Algorithm:
@@ -27,6 +28,7 @@ class Algorithm:
                           but previous results can be passed (along with results into
                           the y argument) to speed up some optimizers.
             y (1d array): objective function evaluations. Defaults to empty.
+            threaded (bool): if True, run optimization in a separate thread.
             show_progress (bool): whether to display a progress bar during
                                   optimization. Adds <1 ms overhead per iteration.
             record_data (bool): whether to store X, y observations. Adds <1 ms overhead per iteration.
@@ -42,6 +44,7 @@ class Algorithm:
     X = attr.ib(factory=lambda: np.atleast_2d([]))
     y = attr.ib(factory=lambda: np.array([]))
 
+    threaded = attr.ib(default=False)
     show_progress = attr.ib(default=True)
     record_data = attr.ib(default=True)
     verbose = attr.ib(default=False)
@@ -190,3 +193,9 @@ class Algorithm:
             while True:
                 yield lst[i]
                 i = (i+1) % len(lst)
+
+    def run(self):
+        if self.threaded:
+            Thread(target=self._run).start()
+        else:
+            self._run()
