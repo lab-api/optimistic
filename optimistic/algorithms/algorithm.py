@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 from optimistic import experiment as objective
 from .plotting import Plotter
 from threading import Thread
+from ipywidgets import Text
 
 @attr.s
 class Algorithm:
@@ -32,7 +33,8 @@ class Algorithm:
             show_progress (bool): whether to display a progress bar during
                                   optimization. Adds <1 ms overhead per iteration.
             record_data (bool): whether to store X, y observations. Adds <1 ms overhead per iteration.
-            verbose (bool): whether to print objective function evaluations to stdout.
+            display (bool): whether to display optimization status using ipywidgets.
+                            Only works when running in a Jupyter environment.
             continuous (bool): whether to quit after convergence/specified number of iterations
                                or continue running.
     '''
@@ -47,8 +49,10 @@ class Algorithm:
     threaded = attr.ib(default=False)
     show_progress = attr.ib(default=True)
     record_data = attr.ib(default=True)
-    verbose = attr.ib(default=False)
+    display = attr.ib(default=False)
     continuous = attr.ib(default=False)
+
+    output = attr.ib(default=None)
 
     def add_parameter(self, parameter, bounds=None, points=None):
         ''' Adds a parameter.
@@ -106,8 +110,11 @@ class Algorithm:
                 self.X = np.append(self.X, np.atleast_2d(point), axis=0)
             self.y = np.append(self.y, result)
 
-        if self.verbose:
-            print(point, result)
+        if self.display:
+            if self.output is None:
+                self.output = Text()
+                display(self.output)
+            self.output.value = str(point) + ' -> ' + str(result)
 
         return -self.sign*result
 
