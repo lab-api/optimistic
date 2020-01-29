@@ -23,8 +23,8 @@ class GradientDescent(Algorithm):
         return g
 
     def run(self):
-        x_i = self.normalize([p() for p in self.parameters.values()])
+        x_i = [p() for p in self.parameters.values()]
 
-        for i in range(self.iterations()):
+        for i in self.range(self.iterations):
             x_i -= self.learning_rate * self.gradient(x_i)
             self.measure(x_i)
