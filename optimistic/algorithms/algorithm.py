@@ -22,6 +22,7 @@ class Algorithm:
             points (dict): optional points for each Parameter to override default
                            point generation in optimizers, e.g. sampling locations
                            for a grid search or initial population in a genetic algorithm.
+            sign (int): choose between maximization (+1) and minimization (-1)
             X (2d array): coordinates sampled during optimization. Defaults to empty,
                           but previous results can be passed (along with results into
                           the y argument) to speed up some optimizers.
@@ -37,6 +38,7 @@ class Algorithm:
     parameters = attr.ib(factory=dict)
     bounds = attr.ib(factory=dict)
     points = attr.ib(factory=dict)        # optional overrides to search points
+    sign = attr.ib(default=1, converter=np.sign)
     X = attr.ib(factory=lambda: np.atleast_2d([]))
     y = attr.ib(factory=lambda: np.array([]))
 
@@ -104,7 +106,7 @@ class Algorithm:
         if self.verbose:
             print(point, result)
 
-        return result
+        return -self.sign*result
 
     @property
     def dataset(self):
