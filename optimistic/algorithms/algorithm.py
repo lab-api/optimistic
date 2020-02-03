@@ -7,6 +7,7 @@ from optimistic import experiment as objective
 from .plotting import Plotter
 from threading import Thread
 from ipywidgets import Text
+from parametric import Parameter
 
 @attr.s
 class Algorithm:
@@ -101,7 +102,11 @@ class Algorithm:
         new_values = {}
         for i, (name, parameter) in enumerate(self.parameters.items()):
             new_values[name] = point[i]
-        result = self.experiment(optimizer=self, **new_values)
+
+        if type(self.experiment) is Parameter:
+            result = objective(self.experiment)(optimizer=self, **new_values)  # manually wrap
+        else:
+            result = self.experiment(optimizer=self, **new_values)
 
         if self.record_data:
             if len(self.X[0]) == 0:
