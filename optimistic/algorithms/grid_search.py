@@ -5,10 +5,11 @@ import pandas as pd
 import dask
 import multiprocessing as mp
 from dask.distributed import Client
+from parametric import Attribute
 
 @attr.s
 class GridSearch(Algorithm):
-    steps = attr.ib(default=20, converter=int)
+    steps = Attribute('steps', 20, converter=int)
     scans = attr.ib(default=1, converter=int)
     parallel = attr.ib(default=False, converter=bool)
     threads_per_worker = attr.ib(default=1, converter=int)
@@ -25,11 +26,11 @@ class GridSearch(Algorithm):
                 if self.logarithmic:
                     grid.append(np.logspace(np.log10(self.bounds[name][0]),
                                             np.log10(self.bounds[name][1]),
-                                            self.steps))
+                                            self.steps()))
                 else:
                     grid.append(np.linspace(self.bounds[name][0],
                                             self.bounds[name][1],
-                                            self.steps))
+                                            self.steps()))
         return np.transpose(np.meshgrid(*[grid[n] for n in range(dim)])).reshape(-1, dim)
 
     def _run(self):
