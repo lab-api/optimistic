@@ -103,7 +103,7 @@ class Algorithm:
         for i, (name, parameter) in enumerate(self.parameters.items()):
             new_values[name] = point[i]
 
-        if type(self.experiment) is Parameter:
+        if isinstance(self.experiment, Parameter):
             result = objective(self.experiment)(optimizer=self, **new_values)  # manually wrap
         else:
             result = self.experiment(optimizer=self, **new_values)
