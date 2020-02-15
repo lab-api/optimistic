@@ -48,7 +48,7 @@ class Algorithm:
     y = attr.ib(factory=lambda: np.array([]))
 
     threaded = attr.ib(default=False)
-    show_progress = attr.ib(default=True)
+    show_progress = attr.ib(default=False)
     record_data = attr.ib(default=True)
     display = attr.ib(default=False)
     continuous = attr.ib(default=False)
