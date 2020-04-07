@@ -51,9 +51,8 @@ class GridSearch(Algorithm):
         display(client)
         futures = []
         for values in points.values:
-            future = client.submit(self.experiment, parallel=True, **dict(zip(self.parameters, values)))
+            future = client.submit(self.experiment, parallel=True, optimizer=self, **dict(zip(self.parameters, values)))
             futures.append(future)
         results = client.gather(futures)
-
-        points[self.experiment.__name__] = results
-        self.data = points
+        self.X = points
+        self.y = results
