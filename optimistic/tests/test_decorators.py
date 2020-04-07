@@ -1,5 +1,5 @@
 from optimistic import experiment
-from parametric import Parameter, Attribute, parametrize
+from parametric import Parameter, Attribute
 import pytest
 
 def test_serial_function_evaluation():
