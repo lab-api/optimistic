@@ -3,7 +3,7 @@ import numpy as np
 
 class Plotter:
     def __init__(self, algorithm):
-        self.data = algorithm.data
+        self.data = algorithm.dataset
         self.experiment = algorithm.experiment
 
     def convergence(self):
